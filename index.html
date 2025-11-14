@@ -8,6 +8,23 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
   <style>
     :root {
+      --primary: #bb86fc;
+      --primary-light: #e2c4ff;
+      --primary-dark: #8a63d2;
+      --on-primary: #000000;
+      --background: #121212;
+      --surface: #1e1e1e;
+      --surface-variant: #2d2d2d;
+      --text-primary: #e8eaed;
+      --text-secondary: #9aa0a6;
+      --border: #3c4043;
+      --success: #81c995;
+      --error: #f28b82;
+      --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+      --shadow-hover: 0 4px 8px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    [data-theme="light"] {
       --primary: #6200ee;
       --primary-light: #9e47ff;
       --primary-dark: #0400ba;
@@ -24,16 +41,684 @@
       --shadow-hover: 0 4px 8px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.12);
     }
 
-    [data-theme="dark"] {
-      --primary: #bb86fc;
-      --primary-light: #e2c4ff;
-      --primary-dark: #8a63d2;
-      --on-primary: #000000;
-      --background: #121212;
-      --surface: #1e1e1e;
-      --surface-variant: #2d2d2d;
-      --text-primary: #e8eaed;
-      --text-secondary: #9aa0a6;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    body {
+      background: var(--background);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Cairo', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1rem;
+      transition: background-color 0.3s, color 0.3s;
+      line-height: 1.6;
+      touch-action: manipulation;
+    }
+
+    body[dir="rtl"] {
+      font-family: 'Cairo', 'Inter', sans-serif;
+    }
+
+    .container {
+      background: var(--surface);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 500px;
+      transition: box-shadow 0.3s, background-color 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .container:hover {
+      box-shadow: var(--shadow-hover);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 1.75rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--text-primary);
+      font-size: 1rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-user-select: text;
+      -moz-user-select: text;
+      -ms-user-select: text;
+      user-select: text;
+    }
+
+    select:focus, input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(187, 134, 252, 0.3);
+    }
+
+    button {
+      background: var(--primary);
+      color: var(--on-primary);
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    button:hover {
+      background: var(--primary-dark);
+      box-shadow: var(--shadow-hover);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .toggle-theme {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      cursor: pointer;
+      font-size: 1.5rem;
+      background: var(--surface);
+      border-radius: 50%;
+      width: 3rem;
+      height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow);
+      transition: transform 0.3s, background-color 0.3s;
+      z-index: 100;
+    }
+
+    .toggle-theme:hover {
+      transform: rotate(15deg);
+    }
+
+    .toggle-lang {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      cursor: pointer;
+      font-size: 1rem;
+      background: var(--surface);
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow);
+      transition: background-color 0.3s;
+      z-index: 100;
+      font-weight: 500;
+    }
+
+    .toggle-lang:hover {
+      background: var(--surface-variant);
+    }
+
+    #results {
+      margin-top: 1.5rem;
+      max-height: 300px;
+      overflow-y: auto;
+      border-radius: 8px;
+      background: var(--surface-variant);
+      padding: 1rem;
+    }
+
+    .username {
+      background: var(--primary);
+      color: var(--on-primary);
+      padding: 0.75rem;
+      margin: 0.5rem 0;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      word-break: break-all;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .username:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+    }
+
+    .username.copied {
+      background: var(--success);
+      transform: scale(1.05);
+    }
+
+    .username::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255,255,255,0.3);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s, height 0.3s;
+    }
+
+    .username:active::after {
+      width: 100px;
+      height: 100px;
+    }
+
+    .counter {
+      text-align: center;
+      margin-top: 1rem;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .notification {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--success);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      box-shadow: var(--shadow-hover);
+      z-index: 1000;
+      font-weight: 500;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .notification.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .dialog-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s;
+    }
+
+    .dialog-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .dialog {
+      background: var(--surface);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow-hover);
+      max-width: 400px;
+      width: 90%;
+      transform: scale(0.7);
+      opacity: 0;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+    }
+
+    .dialog.active {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    .dialog h2 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .dialog p {
+      margin-bottom: 1.5rem;
+      text-align: center;
+      color: var(--text-secondary);
+    }
+
+    .dialog-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .dialog-buttons button {
+      flex: 1;
+    }
+
+    .dialog-buttons button.secondary {
+      background: var(--surface-variant);
+      color: var(--text-primary);
+    }
+
+    .language-animation {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--primary);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s;
+    }
+
+    .language-animation.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .language-text {
+      color: var(--on-primary);
+      font-size: 2rem;
+      font-weight: bold;
+      transform: scale(0.5);
+      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .language-animation.active .language-text {
+      transform: scale(1);
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 1.5rem;
+      }
+      
+      h1 {
+        font-size: 1.5rem;
+      }
+      
+      .toggle-theme, .toggle-lang {
+        position: relative;
+        top: auto;
+        right: auto;
+        left: auto;
+        margin-bottom: 1rem;
+        width: 100%;
+        border-radius: 8px;
+      }
+      
+      .toggle-theme {
+        height: auto;
+      }
+      
+      .header-controls {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      
+      .dialog-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body data-theme="dark" dir="rtl">
+  <div class="header-controls">
+    <span class="material-symbols-outlined toggle-theme" id="themeToggle">dark_mode</span>
+    <div class="toggle-lang" id="langToggle">English</div>
+  </div>
+  
+  <div class="container">
+    <div class="language-animation" id="languageAnimation">
+      <div class="language-text" id="animationText">مرحباً</div>
+    </div>
+    
+    <h1 id="title">تخمين اليوزرات</h1>
+    
+    <div class="form-group">
+      <label id="lengthLabel">طول اليوزر:</label>
+      <select id="lengthSelect">
+        <option value="3">ثلاثية (3 أحرف)</option>
+        <option value="4">رباعية (4 أحرف)</option>
+        <option value="5">خماسية (5 أحرف)</option>
+        <option value="6">سداسية (6 أحرف)</option>
+        <option value="7">سباعية (7 أحرف)</option>
+        <option value="8">ثمانية (8 أحرف)</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label id="symbolsLabel">تضمين رموز خاصة؟</label>
+      <select id="symbolsSelect">
+        <option value="yes">نعم</option>
+        <option value="no" selected>لا</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label id="countLabel">عدد اليوزرات للتوليد:</label>
+      <input type="number" id="countInput" value="10" min="1" max="50">
+    </div>
+    
+    <button id="generateBtn">
+      <span class="material-symbols-outlined">auto_awesome</span>
+      <span id="generateText">توليد يوزرات</span>
+    </button>
+    
+    <div class="counter">
+      <span id="counterText">سيتم توليد</span> <span id="countValue">10</span> <span id="usernamesText">يوزر</span>
+    </div>
+    
+    <div id="results"></div>
+  </div>
+
+  <div class="dialog-overlay" id="maxLimitDialog">
+    <div class="dialog">
+      <h2 id="maxLimitTitle">حد أقصى</h2>
+      <p id="maxLimitMessage">يمكنك توليد 50 يوزر كحد أقصى في المرة الواحدة</p>
+      <div class="dialog-buttons">
+        <button id="maxLimitOk">حسناً</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const userLang = navigator.language || navigator.userLanguage;
+    const isArabic = userLang.startsWith('ar');
+    let currentLang = isArabic ? 'ar' : 'en';
+    
+    const translations = {
+      ar: {
+        title: "تخمين اليوزرات",
+        lengthLabel: "طول اليوزر:",
+        lengthOptions: {
+          3: "ثلاثية (3 أحرف)",
+          4: "رباعية (4 أحرف)",
+          5: "خماسية (5 أحرف)",
+          6: "سداسية (6 أحرف)",
+          7: "سباعية (7 أحرف)",
+          8: "ثمانية (8 أحرف)"
+        },
+        symbolsLabel: "تضمين رموز خاصة؟",
+        symbolsOptions: {
+          yes: "نعم",
+          no: "لا"
+        },
+        countLabel: "عدد اليوزرات للتوليد:",
+        generateText: "توليد يوزرات",
+        counterText: "سيتم توليد",
+        usernamesText: "يوزر",
+        copied: "تم نسخ اليوزر: ",
+        langToggle: "English",
+        maxLimitTitle: "حد أقصى",
+        maxLimitMessage: "يمكنك توليد 50 يوزر كحد أقصى في المرة الواحدة",
+        maxLimitOk: "حسناً",
+        hello: "مرحباً",
+        welcome: "أهلاً وسهلاً"
+      },
+      en: {
+        title: "Username Generator",
+        lengthLabel: "Username Length:",
+        lengthOptions: {
+          3: "Three characters",
+          4: "Four characters",
+          5: "Five characters",
+          6: "Six characters",
+          7: "Seven characters",
+          8: "Eight characters"
+        },
+        symbolsLabel: "Include special symbols?",
+        symbolsOptions: {
+          yes: "Yes",
+          no: "No"
+        },
+        countLabel: "Number of usernames to generate:",
+        generateText: "Generate Usernames",
+        counterText: "Will generate",
+        usernamesText: "usernames",
+        copied: "Username copied: ",
+        langToggle: "العربية",
+        maxLimitTitle: "Maximum Limit",
+        maxLimitMessage: "You can generate up to 50 usernames at once",
+        maxLimitOk: "OK",
+        hello: "Hello",
+        welcome: "Welcome"
+      }
+    };
+    
+    const themeToggle = document.getElementById('themeToggle');
+    const langToggle = document.getElementById('langToggle');
+    const body = document.body;
+    const countInput = document.getElementById('countInput');
+    const countValue = document.getElementById('countValue');
+    const maxLimitDialog = document.getElementById('maxLimitDialog');
+    const maxLimitOk = document.getElementById('maxLimitOk');
+    const languageAnimation = document.getElementById('languageAnimation');
+    const animationText = document.getElementById('animationText');
+    
+    countInput.addEventListener('input', () => {
+      const value = parseInt(countInput.value);
+      if (value > 50) {
+        countInput.value = 50;
+        showMaxLimitDialog();
+      }
+      countValue.textContent = countInput.value;
+    });
+    
+    themeToggle.addEventListener('click', () => {
+      if(body.dataset.theme === 'dark') {
+        body.dataset.theme = 'light';
+        themeToggle.textContent = 'light_mode';
+      } else {
+        body.dataset.theme = 'dark';
+        themeToggle.textContent = 'dark_mode';
+      }
+    });
+    
+    function showLanguageAnimation() {
+      const t = translations[currentLang];
+      animationText.textContent = t.hello;
+      languageAnimation.classList.add('active');
+      
+      setTimeout(() => {
+        languageAnimation.classList.remove('active');
+      }, 1500);
+    }
+    
+    langToggle.addEventListener('click', () => {
+      currentLang = currentLang === 'ar' ? 'en' : 'ar';
+      showLanguageAnimation();
+      setTimeout(updateLanguage, 500);
+    });
+    
+    function updateLanguage() {
+      const t = translations[currentLang];
+      
+      document.getElementById('title').textContent = t.title;
+      document.getElementById('lengthLabel').textContent = t.lengthLabel;
+      document.getElementById('symbolsLabel').textContent = t.symbolsLabel;
+      document.getElementById('countLabel').textContent = t.countLabel;
+      document.getElementById('generateText').textContent = t.generateText;
+      document.getElementById('counterText').textContent = t.counterText;
+      document.getElementById('usernamesText').textContent = t.usernamesText;
+      langToggle.textContent = t.langToggle;
+      document.getElementById('maxLimitTitle').textContent = t.maxLimitTitle;
+      document.getElementById('maxLimitMessage').textContent = t.maxLimitMessage;
+      document.getElementById('maxLimitOk').textContent = t.maxLimitOk;
+      
+      const lengthSelect = document.getElementById('lengthSelect');
+      const currentLength = lengthSelect.value;
+      lengthSelect.innerHTML = '';
+      for (const [value, text] of Object.entries(t.lengthOptions)) {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = text;
+        if (value === currentLength) option.selected = true;
+        lengthSelect.appendChild(option);
+      }
+      
+      const symbolsSelect = document.getElementById('symbolsSelect');
+      const currentSymbols = symbolsSelect.value;
+      symbolsSelect.innerHTML = '';
+      for (const [value, text] of Object.entries(t.symbolsOptions)) {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = text;
+        if (value === currentSymbols) option.selected = true;
+        symbolsSelect.appendChild(option);
+      }
+      
+      body.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+    }
+    
+    function showMaxLimitDialog() {
+      maxLimitDialog.classList.add('active');
+      setTimeout(() => {
+        maxLimitDialog.querySelector('.dialog').classList.add('active');
+      }, 50);
+    }
+    
+    function hideMaxLimitDialog() {
+      maxLimitDialog.querySelector('.dialog').classList.remove('active');
+      setTimeout(() => {
+        maxLimitDialog.classList.remove('active');
+      }, 300);
+    }
+    
+    maxLimitOk.addEventListener('click', hideMaxLimitDialog);
+    
+    updateLanguage();
+    
+    function randomChar(symbols=false) {
+      const letters = 'abcdefghijklmnopqrstuvwxyz';
+      const nums = '0123456789';
+      const special = '_-';
+      let chars = letters + nums;
+      if(symbols) chars += special;
+      return chars[Math.floor(Math.random()*chars.length)];
+    }
+    
+    function generateUsername(length, symbols=false) {
+      let name = '';
+      for(let i=0;i<length;i++){
+        name += randomChar(symbols);
+      }
+      return name;
+    }
+    
+    function showNotification(message, username) {
+      let notification = document.querySelector('.notification');
+      if (!notification) {
+        notification = document.createElement('div');
+        notification.className = 'notification';
+        document.body.appendChild(notification);
+      }
+      
+      notification.textContent = message + username;
+      notification.classList.add('show');
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 2000);
+    }
+    
+    function copyToClipboard(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          const t = translations[currentLang];
+          showNotification(t.copied, text);
+        }).catch(err => {
+          fallbackCopyToClipboard(text);
+        });
+      } else {
+        fallbackCopyToClipboard(text);
+      }
+    }
+    
+    function fallbackCopyToClipboard(text) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      textArea.style.top = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      
+      try {
+        document.execCommand('copy');
+        const t = translations[currentLang];
+        showNotification(t.copied, text);
+      } catch (err) {
+        console.error('Fallback: Unable to copy', err);
+      }
+      
+      document.body.removeChild(textArea);
+    }
+    
+    document.getElementById('generateBtn').addEventListener('click', () => {
+      const length = parseInt(document.getElementById('lengthSelect').value);
+      const symbols = document.getElementById('symbolsSelect').value === 'yes';
+      let count = parseInt(document.getElementById('countInput').value);
+      
+      if (count > 50) {
+        count = 50;
+        countInput.value = 50;
+        showMaxLimitDialog();
+      }
+      
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
       --border: #3c4043;
       --success: #81c995;
       --error: #f28b82;
