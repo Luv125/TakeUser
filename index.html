@@ -377,6 +377,21 @@
       transform: scale(1);
     }
 
+    .download-section {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .download-btn {
+      background: var(--success);
+      color: white;
+    }
+
+    .download-btn:hover {
+      background: #2e7d32;
+    }
+
     @media (max-width: 480px) {
       .container {
         padding: 1.5rem;
@@ -460,6 +475,14 @@
     </div>
     
     <div id="results"></div>
+    
+    <!-- قسم تحميل التطبيق -->
+    <div class="download-section">
+      <button id="downloadBtn" class="download-btn">
+        <span class="material-symbols-outlined">android</span>
+        <span id="downloadText">تحميل تطبيق Android</span>
+      </button>
+    </div>
   </div>
 
   <div class="dialog-overlay" id="maxLimitDialog">
@@ -468,6 +491,18 @@
       <p id="maxLimitMessage">يمكنك توليد 50 يوزر كحد أقصى في المرة الواحدة</p>
       <div class="dialog-buttons">
         <button id="maxLimitOk">حسناً</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- حوار تأكيد التحميل -->
+  <div class="dialog-overlay" id="downloadDialog">
+    <div class="dialog">
+      <h2 id="downloadDialogTitle">تحميل التطبيق</h2>
+      <p id="downloadDialogMessage">سيتم تحميل ملف UserGen.apk. تأكد من أن جهازك يسمح بتثبيت تطبيقات من مصادر غير معروفة.</p>
+      <div class="dialog-buttons">
+        <button id="downloadConfirm" class="download-btn">تحميل</button>
+        <button id="downloadCancel" class="secondary">إلغاء</button>
       </div>
     </div>
   </div>
@@ -504,7 +539,12 @@
         maxLimitMessage: "يمكنك توليد 50 يوزر كحد أقصى في المرة الواحدة",
         maxLimitOk: "حسناً",
         hello: "مرحباً",
-        welcome: "أهلاً وسهلاً"
+        welcome: "أهلاً وسهلاً",
+        downloadText: "تحميل تطبيق Android",
+        downloadDialogTitle: "تحميل التطبيق",
+        downloadDialogMessage: "سيتم تحميل ملف UserGen.apk. تأكد من أن جهازك يسمح بتثبيت تطبيقات من مصادر غير معروفة.",
+        downloadConfirm: "تحميل",
+        downloadCancel: "إلغاء"
       },
       en: {
         title: "Username Generator",
@@ -532,7 +572,12 @@
         maxLimitMessage: "You can generate up to 50 usernames at once",
         maxLimitOk: "OK",
         hello: "Hello",
-        welcome: "Welcome"
+        welcome: "Welcome",
+        downloadText: "Download Android App",
+        downloadDialogTitle: "Download App",
+        downloadDialogMessage: "UserGen.apk will be downloaded. Make sure your device allows installation from unknown sources.",
+        downloadConfirm: "Download",
+        downloadCancel: "Cancel"
       }
     };
     
@@ -545,6 +590,10 @@
     const maxLimitOk = document.getElementById('maxLimitOk');
     const languageAnimation = document.getElementById('languageAnimation');
     const animationText = document.getElementById('animationText');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const downloadDialog = document.getElementById('downloadDialog');
+    const downloadConfirm = document.getElementById('downloadConfirm');
+    const downloadCancel = document.getElementById('downloadCancel');
     
     countInput.addEventListener('input', () => {
       const value = parseInt(countInput.value);
@@ -595,6 +644,11 @@
       document.getElementById('maxLimitTitle').textContent = t.maxLimitTitle;
       document.getElementById('maxLimitMessage').textContent = t.maxLimitMessage;
       document.getElementById('maxLimitOk').textContent = t.maxLimitOk;
+      document.getElementById('downloadText').textContent = t.downloadText;
+      document.getElementById('downloadDialogTitle').textContent = t.downloadDialogTitle;
+      document.getElementById('downloadDialogMessage').textContent = t.downloadDialogMessage;
+      document.getElementById('downloadConfirm').textContent = t.downloadConfirm;
+      document.getElementById('downloadCancel').textContent = t.downloadCancel;
       
       const lengthSelect = document.getElementById('lengthSelect');
       const currentLength = lengthSelect.value;
@@ -635,131 +689,14 @@
       }, 300);
     }
     
-    maxLimitOk.addEventListener('click', hideMaxLimitDialog);
-    
-    updateLanguage();
-    
-    function randomChar(symbols=false) {
-      const letters = 'abcdefghijklmnopqrstuvwxyz';
-      const nums = '0123456789';
-      const special = '_';
-      let chars = letters + nums;
-      if(symbols) chars += special;
-      return chars[Math.floor(Math.random()*chars.length)];
-    }
-    
-    function generateUsername(length, symbols=false) {
-      let name = '';
-      for(let i=0;i<length;i++){
-        name += randomChar(symbols);
-      }
-      return name;
-    }
-    
-    function showNotification(message, username) {
-      let notification = document.querySelector('.notification');
-      if (!notification) {
-        notification = document.createElement('div');
-        notification.className = 'notification';
-        document.body.appendChild(notification);
-      }
-      
-      notification.textContent = message + username;
-      notification.classList.add('show');
-      
+    function showDownloadDialog() {
+      downloadDialog.classList.add('active');
       setTimeout(() => {
-        notification.classList.remove('show');
-      }, 2000);
+        downloadDialog.querySelector('.dialog').classList.add('active');
+      }, 50);
     }
     
-    function copyToClipboard(text) {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(() => {
-          const t = translations[currentLang];
-          showNotification(t.copied, text);
-        }).catch(err => {
-          fallbackCopyToClipboard(text);
-        });
-      } else {
-        fallbackCopyToClipboard(text);
-      }
-    }
-    
-    function fallbackCopyToClipboard(text) {
-      const textArea = document.createElement("textarea");
-      textArea.value = text;
-      textArea.style.position = "fixed";
-      textArea.style.left = "-999999px";
-      textArea.style.top = "-999999px";
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-      
-      try {
-        document.execCommand('copy');
-        const t = translations[currentLang];
-        showNotification(t.copied, text);
-      } catch (err) {
-        console.error('Fallback: Unable to copy', err);
-      }
-      
-      document.body.removeChild(textArea);
-    }
-    
-    document.getElementById('generateBtn').addEventListener('click', () => {
-      const length = parseInt(document.getElementById('lengthSelect').value);
-      const symbols = document.getElementById('symbolsSelect').value === 'yes';
-      let count = parseInt(document.getElementById('countInput').value);
-      
-      if (count > 50) {
-        count = 50;
-        countInput.value = 50;
-        showMaxLimitDialog();
-      }
-      
-      const resultsDiv = document.getElementById('results');
-      resultsDiv.innerHTML = '';
-      
-      for(let i=0;i<count;i++){
-        const uname = generateUsername(length, symbols);
-        const div = document.createElement('div');
-        div.className = 'username';
-        div.textContent = uname;
-        div.setAttribute('data-username', uname);
-        
-        div.addEventListener('click', function() {
-          const username = this.getAttribute('data-username');
-          this.classList.add('copied');
-          copyToClipboard(username);
-          setTimeout(() => {
-            this.classList.remove('copied');
-          }, 1000);
-        });
-        
-        resultsDiv.appendChild(div);
-      }
-    });
-    
-    document.addEventListener('contextmenu', (e) => {
-      if (e.target.classList.contains('username')) {
-        e.preventDefault();
-        return false;
-      }
-    });
-    
-    document.addEventListener('selectstart', (e) => {
-      if (e.target.classList.contains('username')) {
-        e.preventDefault();
-        return false;
-      }
-    });
-    
-    document.addEventListener('dragstart', (e) => {
-      if (e.target.classList.contains('username')) {
-        e.preventDefault();
-        return false;
-      }
-    });
-  </script>
-</body>
-</html>
+    function hideDownloadDialog() {
+      downloadDialog.querySelector('.dialog').classList.remove('active');
+      setTimeout(() => {
+        dow
